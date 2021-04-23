@@ -1,4 +1,4 @@
-package cn.lutfly;
+package cn.lutfly.nio;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;

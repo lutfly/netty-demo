@@ -1,4 +1,4 @@
-package cn.lutfly;
+package cn.lutfly.nio;
 
 import java.io.FileInputStream;
 import java.io.IOException;
