@@ -5,11 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Iterator;
-
-import static cn.itcast.nio.c2.ByteBufferUtil.debugRead;
 
 @Slf4j
 public class Server {
@@ -48,24 +49,21 @@ public class Server {
                     log.debug("{}", sc);
                     log.debug("scKey:{}", scKey);
                 } else if (key.isReadable()) { // 如果是 read
-//                    try {
-                    SocketChannel channel = (SocketChannel) key.channel(); // 拿到触发事件的channel
-                    ByteBuffer buffer = ByteBuffer.allocate(16);
-                    int read = channel.read(buffer);// 如果是正常断开，read 的方法的返回值是 -1
-                    buffer.flip();
-                    debugRead(buffer);
-                    if (read == -1) {
-                        key.cancel();
-                    }
-//                        } else {
-//                            buffer.flip();
+                    try {
+                        SocketChannel channel = (SocketChannel) key.channel(); // 拿到触发事件的channel
+                        ByteBuffer buffer = ByteBuffer.allocate(4);
+                        int read = channel.read(buffer); // 如果是正常断开，read 的方法的返回值是 -1
+                        if(read == -1) {
+                            key.cancel();
+                        } else {
+                            buffer.flip();
 //                            debugAll(buffer);
-//                            System.out.println(Charset.defaultCharset().decode(buffer));
-//                        }
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                        key.cancel();  // 因为客户端断开了,因此需要将 key 取消（从 selector 的 keys 集合中真正删除 key）
-//                    }
+                            System.out.println(Charset.defaultCharset().decode(buffer));
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        key.cancel();  // 因为客户端断开了,因此需要将 key 取消（从 selector 的 keys 集合中真正删除 key）
+                    }
                 }
             }
         }
